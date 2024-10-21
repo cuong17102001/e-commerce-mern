@@ -82,4 +82,9 @@ Follow these setps 👇👇
 
 You can deploy frontend into vercel or netlify also. Thanks
 
-`Build with 💛 by Hasan`
+
+Ngân hàng      :	NCB
+Số thẻ         :  9704198526191432198
+Tên chủ thẻ    :	NGUYEN VAN A
+Ngày phát hành :	07/15
+Mật khẩu OTP   :	123456

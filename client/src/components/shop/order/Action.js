@@ -45,15 +45,14 @@ export const pay = async (
   } else if (!state.phone) {
     setState({ ...state, error: "Please provide your phone number" });
   } else {
-    let nonce;
     state.instance
-      .requestPaymentMethod()
       .then((data) => {
         dispatch({ type: "loading", payload: true });
-        nonce = data.nonce;
+
         let paymentData = {
-          amountTotal: totalCost(),
-          paymentMethod: nonce,
+          amount: totalCost(),
+          orderDescription: state.orderDescription ?? "",
+          orderType: "billpayment",
         };
         getPaymentProcess(paymentData)
           .then(async (res) => {

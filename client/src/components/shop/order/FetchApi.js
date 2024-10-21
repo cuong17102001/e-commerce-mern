@@ -22,6 +22,15 @@ export const getPaymentProcess = async (paymentData) => {
   }
 };
 
+export const getUrlPaymentVnpay = async (paymentData) => {
+  try {
+    let res = await axios.post(`${apiURL}/api/payment/create-payment-vnpay`, paymentData);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const createOrder = async (orderData) => {
   try {
     let res = await axios.post(`${apiURL}/api/order/create-order`, orderData);
