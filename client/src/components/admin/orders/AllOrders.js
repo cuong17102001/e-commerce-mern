@@ -137,7 +137,7 @@ const CategoryTable = ({ order, editOrder }) => {
           )}
         </td>
         <td className="hover:bg-gray-200 p-2 text-center">
-          ${order.amount}.00
+          {order.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}vnđ
         </td>
         <td className="hover:bg-gray-200 p-2 text-center">
           {order.transactionId}

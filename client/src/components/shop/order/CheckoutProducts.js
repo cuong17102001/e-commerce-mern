@@ -4,7 +4,7 @@ import { LayoutContext } from "../layout";
 import { subTotal, quantity, totalCost } from "../partials/Mixins";
 
 import { cartListProduct } from "../partials/FetchApi";
-import { getBrainTreeToken, getPaymentProcess } from "./FetchApi";
+import { getBrainTreeToken, getPaymentProcess, getUrlPaymentVnpay } from "./FetchApi";
 import { fetchData, fetchbrainTree, pay } from "./Action";
 
 import DropIn from "braintree-web-drop-in-react";
@@ -113,15 +113,6 @@ export const CheckoutComponent = (props) => {
                       placeholder="+880"
                     />
                   </div>
-                  {/* <DropIn
-                    options={{
-                      authorization: state.clientToken,
-                      paypal: {
-                        flow: "vault",
-                      },
-                    }}
-                    onInstance={(instance) => (state.instance = instance)}
-                  /> */}
                   <div
                     onClick={(e) =>
                       pay(
@@ -129,7 +120,7 @@ export const CheckoutComponent = (props) => {
                         dispatch,
                         state,
                         setState,
-                        getPaymentProcess,
+                        getUrlPaymentVnpay,
                         totalCost,
                         history
                       )
@@ -190,13 +181,13 @@ const CheckoutProducts = ({ products }) => {
                     {product.pName}
                   </div>
                   <div className="md:ml-6 font-semibold text-gray-600 text-sm">
-                    Price : ${product.pPrice}.00{" "}
+                    Price : {product.pPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}vnđ{" "}
                   </div>
                   <div className="md:ml-6 font-semibold text-gray-600 text-sm">
                     Quantitiy : {quantity(product._id)}
                   </div>
                   <div className="font-semibold text-gray-600 text-sm">
-                    Subtotal : ${subTotal(product._id, product.pPrice)}.00
+                    Subtotal : {subTotal(product._id, product.pPrice).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}vnđ
                   </div>
                 </div>
               </div>

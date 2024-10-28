@@ -83,7 +83,14 @@ const ProductDetailsSectionTwo = (props) => {
           <span>Category :</span>
           <span className="text-sm text-gray-600">
             {" "}
-            {singleProduct.pCategory ? singleProduct.pCategory.cName : ""}
+            {singleProduct.pCategory ? 
+            singleProduct.pCategory.map((category, index) => (
+            <span 
+              key={index} 
+              className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">
+              {category.cName}
+            </span>
+          )) : ""}
           </span>
         </div>
       </div>

@@ -10,6 +10,7 @@ import PageNotFound from "./layout/PageNotFound";
 import ProductDetails from "./productDetails";
 import ProductByCategory from "./home/ProductByCategory";
 import CheckoutPage from "./order/CheckoutPage";
+import VnpayReturn from "./order/VnPayReturn";
 
 export {
   Home,
@@ -26,4 +27,5 @@ export {
   ProductDetails,
   ProductByCategory,
   CheckoutPage,
+  VnpayReturn
 };

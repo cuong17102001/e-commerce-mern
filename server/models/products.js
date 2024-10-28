@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
     pCategory: {
-      type: ObjectId,
+      type: [{ type: mongoose.Schema.Types.ObjectId }],
       ref: "categories",
     },
     pImages: {

@@ -276,6 +276,7 @@ const EditProductModal = (props) => {
                   name="status"
                   className="px-4 py-2 border focus:outline-none"
                   id="status"
+                  multiple
                 >
                   <option disabled value="">
                     Select a category

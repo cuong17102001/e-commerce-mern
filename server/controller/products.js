@@ -30,6 +30,7 @@ class Product {
   async getAllProduct(req, res) {
     try {
       let Products = await productModel
+        // .find({pName: {$regex: "áo", $options: 'i'}})
         .find({})
         .populate("pCategory", "_id cName")
         .sort({ _id: -1 });
@@ -75,16 +76,21 @@ class Product {
         for (const img of images) {
           allImages.push(img.filename);
         }
+        console.log("==============",pCategory);
+        let categories = pCategory.split(",");
         let newProduct = new productModel({
           pImages: allImages,
           pName,
           pDescription,
           pPrice,
           pQuantity,
-          pCategory,
+          pCategory: categories,
           pOffer,
           pStatus,
         });
+
+        console.log(newProduct);
+        
         let save = await newProduct.save();
         if (save) {
           return res.json({ success: "Product created successfully" });
@@ -220,12 +226,14 @@ class Product {
 
   async getProductByPrice(req, res) {
     let { price } = req.body;
+    console.log(price);
+    
     if (!price) {
-      return res.json({ error: "All filled must be required" });
+      return res.json({ error: "All fields must be required" });
     } else {
       try {
         let products = await productModel
-          .find({ pPrice: { $lt: price } })
+          .find({ pPrice: { $gt: price } })
           .populate("pCategory", "cName")
           .sort({ pPrice: -1 });
         if (products) {

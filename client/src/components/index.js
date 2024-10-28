@@ -9,6 +9,7 @@ import {
   ProductDetails,
   ProductByCategory,
   CheckoutPage,
+  VnpayReturn
 } from "./shop";
 import { DashboardAdmin, Categories, Products, Orders } from "./admin";
 import { UserProfile, UserOrders, SettingUser } from "./shop/dashboardUser";
@@ -29,6 +30,7 @@ const Routes = (props) => {
           path="/products/category/:catId"
           component={ProductByCategory}
         />
+        <Route exact path="/vnpay-return" component={VnpayReturn} />
         <CartProtectedRoute
           exact={true}
           path="/checkout"

@@ -1,8 +1,9 @@
-import React, { Fragment, useContext, useState, useEffect } from "react";
+import React, { Fragment, useContext, useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { HomeContext } from "./index";
 import { getAllCategory } from "../../admin/categories/FetchApi";
 import { getAllProduct, productByPrice } from "../../admin/products/FetchApi";
+import { debounce } from 'lodash';
 import "./style.css";
 
 const apiURL = process.env.REACT_APP_API_URL;
@@ -108,8 +109,8 @@ const FilterList = () => {
         <div className="flex justify-between items-center">
           <div className="flex flex-col space-y-2  w-2/3 lg:w-2/4">
             <label htmlFor="points" className="text-sm">
-              Price (between 0 and 10$):{" "}
-              <span className="font-semibold text-yellow-700">{range}.00$</span>{" "}
+              Price (between 0 and 1.000.000vnđ):{" "}
+              <span className="font-semibold text-yellow-700">{range.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}vnđ</span>{" "}
             </label>
             <input
               value={range}
@@ -117,8 +118,8 @@ const FilterList = () => {
               type="range"
               id="points"
               min="0"
-              max="1000"
-              step="10"
+              max="1000000"
+              step="1000"
               onChange={(e) => rangeHandle(e)}
             />
           </div>
@@ -149,26 +150,36 @@ const Search = () => {
   const [search, setSearch] = useState("");
   const [productArray, setPa] = useState(null);
 
+  // const searchHandle = async (e) => {
+  //   setSearch(e.target.value);
+  //   await fetchData();
+  //   // dispatch({
+  //   //   type: "searchHandleInReducer",
+  //   //   payload: e.target.value,
+  //   //   productArray: productArray,
+  //   // });
+  // };
+
   const searchHandle = (e) => {
     setSearch(e.target.value);
-    fetchData();
-    dispatch({
-      type: "searchHandleInReducer",
-      payload: e.target.value,
-      productArray: productArray,
-    });
+    debouncedSearch(e.target.value);
   };
+
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      fetchData();
+    }, 300), // Thời gian delay 300ms
+    []
+  );
 
   const fetchData = async () => {
     dispatch({ type: "loading", payload: true });
     try {
-      setTimeout(async () => {
-        let responseData = await getAllProduct();
+      let responseData = await getAllProduct();
         if (responseData && responseData.Products) {
           setPa(responseData.Products);
           dispatch({ type: "loading", payload: false });
         }
-      }, 700);
     } catch (error) {
       console.log(error);
     }
