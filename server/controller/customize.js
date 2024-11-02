@@ -42,7 +42,7 @@ class Customize {
     } else {
       try {
         let deletedSlideImage = await customizeModel.findById(id);
-        const filePath = `../server/public/uploads/customize/${deletedSlideImage.slideImage}`;
+        const filePath = process.env.IMAGES_URL +`customize/${deletedSlideImage.slideImage}`;
 
         let deleteImage = await customizeModel.findByIdAndDelete(id);
         if (deleteImage) {

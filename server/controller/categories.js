@@ -17,7 +17,7 @@ class Category {
   async postAddCategory(req, res) {
     let { cName, cDescription, cStatus } = req.body;
     let cImage = req.file.filename;
-    const filePath = `../server/public/uploads/categories/${cImage}`;
+    const filePath = process.env.IMAGES_URL + `categories/${cImage}`;
 
     if (!cName || !cDescription || !cStatus || !cImage) {
       fs.unlink(filePath, (err) => {
@@ -83,7 +83,7 @@ class Category {
     } else {
       try {
         let deletedCategoryFile = await categoryModel.findById(cId);
-        const filePath = `../server/public/uploads/categories/${deletedCategoryFile.cImage}`;
+        const filePath = process.env.IMAGES_URL +`categories/${deletedCategoryFile.cImage}`;
 
         let deleteCategory = await categoryModel.findByIdAndDelete(cId);
         if (deleteCategory) {

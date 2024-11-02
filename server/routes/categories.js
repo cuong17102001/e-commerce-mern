@@ -7,7 +7,7 @@ const { loginCheck } = require("../middleware/auth");
 // Image Upload setting
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./public/uploads/categories");
+    cb(null, process.env.IMAGES_URL + "categories");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "_" + file.originalname);
