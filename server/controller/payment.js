@@ -17,7 +17,7 @@ class Payment {
         let tmnCode = "JYPUNQJN";
         let secretKey = "GFY5ODK00SV0DM82AYLE5Y6PSDI4E3KO";
         let vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        let returnUrl = "http://localhost:3000/vnpay-return?address=" + address + "&phone=" + phone;
+        let returnUrl = "http://http://14.225.207.46:80/vnpay-return?address=" + address + "&phone=" + phone;
         let orderId = moment(date).format('DDHHmmss');
         let amount = req.body.amount;
         let bankCode = "VNBANK";
