@@ -8,7 +8,7 @@ const EditCategoryModal = (props) => {
   const [des, setDes] = useState("");
   const [status, setStatus] = useState("");
   const [cId, setCid] = useState("");
-
+  
   useEffect(() => {
     setDes(data.editCategoryModal.des);
     setStatus(data.editCategoryModal.status);
@@ -86,18 +86,6 @@ const EditCategoryModal = (props) => {
                 />
               </svg>
             </span>
-          </div>
-          <div className="flex flex-col space-y-1 w-full">
-            <label htmlFor="description">Category Description</label>
-            <textarea
-              value={des}
-              onChange={(e) => setDes(e.target.value)}
-              className="px-4 py-2 border focus:outline-none"
-              name="description"
-              id="description"
-              cols={5}
-              rows={5}
-            />
           </div>
           <div className="flex flex-col space-y-1 w-full">
             <label htmlFor="status">Category Status</label>

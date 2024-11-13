@@ -33,6 +33,8 @@ class Product {
         .find({})
         .populate("pCategory", "_id cName")
         .sort({ _id: -1 });
+        console.log(Products);
+        
       if (Products) {
         return res.json({ Products });
       }

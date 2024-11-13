@@ -15,11 +15,9 @@ class Category {
   }
 
   async postAddCategory(req, res) {
-    let { cName, cDescription, cStatus } = req.body;
-    let cImage = req.file.filename;
-    const filePath = process.env.IMAGES_URL + `categories/${cImage}`;
+    let { cName, cStatus } = req.body;
 
-    if (!cName || !cDescription || !cStatus || !cImage) {
+    if (!cName || !cStatus) {
       fs.unlink(filePath, (err) => {
         if (err) {
           console.log(err);
@@ -40,9 +38,7 @@ class Category {
         } else {
           let newCategory = new categoryModel({
             cName,
-            cDescription,
             cStatus,
-            cImage,
           });
           await newCategory.save((err) => {
             if (!err) {
@@ -57,13 +53,12 @@ class Category {
   }
 
   async postEditCategory(req, res) {
-    let { cId, cDescription, cStatus } = req.body;
-    if (!cId || !cDescription || !cStatus) {
+    let { cId, cStatus } = req.body;
+    if (!cId || !cStatus) {
       return res.json({ error: "All filled must be required" });
     }
     try {
       let editCategory = categoryModel.findByIdAndUpdate(cId, {
-        cDescription,
         cStatus,
         updatedAt: Date.now(),
       });
@@ -82,18 +77,9 @@ class Category {
       return res.json({ error: "All filled must be required" });
     } else {
       try {
-        let deletedCategoryFile = await categoryModel.findById(cId);
-        const filePath = process.env.IMAGES_URL +`categories/${deletedCategoryFile.cImage}`;
-
         let deleteCategory = await categoryModel.findByIdAndDelete(cId);
         if (deleteCategory) {
-          // Delete Image from uploads -> categories folder 
-          fs.unlink(filePath, (err) => {
-            if (err) {
-              console.log(err);
-            }
-            return res.json({ success: "Category deleted successfully" });
-          });
+          return res.json({ success: "Category deleted successfully" });
         }
       } catch (err) {
         console.log(err);

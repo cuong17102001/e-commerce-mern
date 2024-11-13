@@ -11,8 +11,6 @@ const AddCategoryModal = (props) => {
 
   const [fData, setFdata] = useState({
     cName: "",
-    cDescription: "",
-    cImage: "",
     cStatus: "Active",
     success: false,
     error: false,
@@ -39,11 +37,6 @@ const AddCategoryModal = (props) => {
     // Reset and prevent the form
     e.preventDefault();
     e.target.reset();
-
-    if (!fData.cImage) {
-      dispatch({ type: "loading", payload: false });
-      return setFdata({ ...fData, error: "Please upload a category image" });
-    }
 
     try {
       let responseData = await createCategory(fData);
@@ -145,42 +138,6 @@ const AddCategoryModal = (props) => {
                 value={fData.cName}
                 className="px-4 py-2 border focus:outline-none"
                 type="text"
-              />
-            </div>
-            <div className="flex flex-col space-y-1 w-full">
-              <label htmlFor="description">Category Description</label>
-              <textarea
-                onChange={(e) =>
-                  setFdata({
-                    ...fData,
-                    success: false,
-                    error: false,
-                    cDescription: e.target.value,
-                  })
-                }
-                value={fData.cDescription}
-                className="px-4 py-2 border focus:outline-none"
-                name="description"
-                id="description"
-                cols={5}
-                rows={5}
-              />
-            </div>
-            {/* Image Field & function */}
-            <div className="flex flex-col space-y-1 w-full">
-              <label htmlFor="name">Category Image</label>
-              <input
-                accept=".jpg, .jpeg, .png"
-                onChange={(e) => {
-                  setFdata({
-                    ...fData,
-                    success: false,
-                    error: false,
-                    cImage: e.target.files[0],
-                  });
-                }}
-                className="px-4 py-2 border focus:outline-none"
-                type="file"
               />
             </div>
             <div className="flex flex-col space-y-1 w-full">
