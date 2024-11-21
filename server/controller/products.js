@@ -32,7 +32,8 @@ class Product {
         // .find({pName: {$regex: "áo", $options: 'i'}})
         .find({})
         .populate("pCategory", "_id cName")
-        .sort({ _id: -1 });
+        .sort({ _id: -1 })
+        .limit(10);
         console.log(Products);
         
       if (Products) {
