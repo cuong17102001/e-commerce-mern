@@ -5,7 +5,7 @@ const path = require("path");
 class Product {
   // Delete Image from uploads -> products folder
   static deleteImages(images, mode) {
-    var basePath = process.env.IMAGES_URL + "products/"; 
+    var basePath = process.env.IMAGES_URL + "products/";
     console.log(basePath);
     for (var i = 0; i < images.length; i++) {
       let filePath = "";
@@ -34,8 +34,8 @@ class Product {
         .populate("pCategory", "_id cName")
         .sort({ _id: -1 })
         .limit(10);
-        console.log(Products);
-        
+      console.log(Products);
+
       if (Products) {
         return res.json({ Products });
       }
@@ -78,7 +78,7 @@ class Product {
         for (const img of images) {
           allImages.push(img.filename);
         }
-        console.log("==============",pCategory);
+        console.log("==============", pCategory);
         let categories = pCategory.split(",");
         let newProduct = new productModel({
           pImages: allImages,
@@ -92,7 +92,7 @@ class Product {
         });
 
         console.log(newProduct);
-        
+
         let save = await newProduct.save();
         if (save) {
           return res.json({ success: "Product created successfully" });
@@ -146,7 +146,7 @@ class Product {
         pDescription,
         pPrice,
         pQuantity,
-        pCategory : pCategory.split(","),
+        pCategory: pCategory.split(","),
         pOffer,
         pStatus,
       };
@@ -229,7 +229,7 @@ class Product {
   async getProductByPrice(req, res) {
     let { price } = req.body;
     console.log(price);
-    
+
     if (!price) {
       return res.json({ error: "All fields must be required" });
     } else {
@@ -352,6 +352,53 @@ class Product {
         });
       } catch (err) {
         console.log(err);
+      }
+    }
+  }
+  async getProductByImage(req, res) {
+    try {
+      // Lấy hình ảnh từ frontend
+      let { image } = req.body;
+
+      // Tạo FormData và thêm hình ảnh vào
+      const formData = new FormData();
+      formData.append('image', image);
+
+      // Gọi API AI search
+      const response = await axios.post('http://127.0.0.1:7000/search', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Xử lý kết quả trả về từ API
+      const searchResults = response.data;
+
+      // Trả kết quả về cho frontend
+      res.json(searchResults);
+    } catch (error) {
+      console.error('Error calling AI search API:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async getProductBySearch(req, res) {
+    let { search } = req.body;
+    if (!search) {
+      return res.json({ error: "All filled must be required" });
+    } else {
+      try {
+        let products = await productModel.find({
+          $or: [
+            { pName: { $regex: search, $options: "i" } },
+            { pDescription: { $regex: search, $options: "i" } },
+          ],
+        });
+        if (products) {
+          return res.json({ Products: products });
+        }
+      } catch (err) {
+        return res.json({ error: "Search product wrong" });
       }
     }
   }
