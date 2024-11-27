@@ -31,7 +31,7 @@ const CategoryList = () => {
   return (
     <div className={`${data.categoryListDropdown ? "" : "hidden"} my-4`}>
       <hr />
-      <div className="py-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="flex">
         {categories && categories.length > 0 ? (
           categories.map((item, index) => {
             return (
@@ -40,13 +40,9 @@ const CategoryList = () => {
                   onClick={(e) =>
                     history.push(`/products/category/${item._id}`)
                   }
-                  className="col-span-1 m-2 flex flex-col items-center justify-center space-y-2 cursor-pointer"
+                  className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
                 >
-                  <img
-                    src={`${apiURL}/uploads/categories/${item.cImage}`}
-                    alt="pic"
-                  />
-                  <div className="font-medium">{item.cName}</div>
+                  <div style={{padding: 15}} className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{item.cName}</div>
                 </div>
               </Fragment>
             );

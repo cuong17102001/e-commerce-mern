@@ -69,7 +69,7 @@ class Product {
       });
     }
     // Validate Images
-    else if (images.length !== 2) {
+    else if (images.length < 2) {
       Product.deleteImages(images, "file");
       return res.json({ error: "Must need to provide 2 images" });
     } else {
@@ -146,11 +146,11 @@ class Product {
         pDescription,
         pPrice,
         pQuantity,
-        pCategory,
+        pCategory : pCategory.split(","),
         pOffer,
         pStatus,
       };
-      if (editImages.length == 2) {
+      if (editImages.length >= 2) {
         let allEditImages = [];
         for (const img of editImages) {
           allEditImages.push(img.filename);

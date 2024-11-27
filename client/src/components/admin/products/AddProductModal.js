@@ -15,7 +15,7 @@ const AddProductDetail = ({ categories }) => {
     pDescription: "",
     pStatus: "Active",
     pImage: null, // Initial value will be null or empty array
-    pCategory: "",
+    pCategory: [],
     pPrice: "",
     pOffer: 0,
     pQuantity: "",
@@ -78,6 +78,7 @@ const AddProductDetail = ({ categories }) => {
             error: false,
           });
         }, 2000);
+        dispatch({ type: "addProductModal", payload: false })
       } else if (responseData.error) {
         setFdata({ ...fData, success: false, error: responseData.error });
         setTimeout(() => {
@@ -104,7 +105,7 @@ const AddProductDetail = ({ categories }) => {
         className={`${data.addProductModal ? "" : "hidden"
           } fixed inset-0 flex items-center z-30 justify-center overflow-auto`}
       >
-        <div className="mt-32 md:mt-0 relative bg-white w-11/12 md:w-3/6 shadow-lg flex flex-col items-center space-y-4 px-4 py-4 md:px-8">
+        <div style={{maxHeight: 600, overflow: "scroll"}}  className="mt-32 md:mt-0 relative bg-white w-11/12 md:w-3/6 shadow-lg flex flex-col items-center space-y-4 px-4 py-4 md:px-8">
           <div className="flex items-center justify-between w-full pt-4">
             <span className="text-left font-semibold text-2xl tracking-wider">
               Add Product
@@ -193,7 +194,7 @@ const AddProductDetail = ({ categories }) => {
             {/* Most Important part for uploading multiple image */}
             <div className="flex flex-col mt-4">
               <label htmlFor="image">Product Images *</label>
-              <span className="text-gray-600 text-xs">Must need 2 images</span>
+              <span className="text-gray-600 text-xs">Must need at least 2 images</span>
               <input
                 onChange={(e) =>
                   setFdata({
@@ -204,7 +205,6 @@ const AddProductDetail = ({ categories }) => {
                   })
                 }
                 type="file"
-                accept=".jpg, .jpeg, .png"
                 className="px-4 py-2 border focus:outline-none"
                 id="image"
                 multiple

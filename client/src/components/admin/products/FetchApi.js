@@ -60,12 +60,15 @@ export const editProduct = async (product) => {
       formData.append("pEditImages", file);
     }
   }
+  debugger
+  console.log(product, "data product");
+  
   /* Most important part for updating multiple image  */
   formData.append("pId", product.pId);
   formData.append("pName", product.pName);
   formData.append("pDescription", product.pDescription);
   formData.append("pStatus", product.pStatus);
-  formData.append("pCategory", product.pCategory._id);
+  formData.append("pCategory", product.pCategory);
   formData.append("pQuantity", product.pQuantity);
   formData.append("pPrice", product.pPrice);
   formData.append("pOffer", product.pOffer);

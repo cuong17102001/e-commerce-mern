@@ -8,7 +8,7 @@ export const productState = {
     pDescription: "",
     pImages: null,
     pStatus: "",
-    pCategory: "",
+    pCategory: [],
     pQuantity: "",
     pPrice: "",
     pOffer: "",

@@ -40,11 +40,23 @@ export const slideImage = (type, active, count, setCount, pImages) => {
   if (active === count) {
     return true;
   }
+
+  if (type === "select") {
+    setCount(active);
+  }
+
   if (type === "increase") {
     if (count === pImages.length - 1) {
       setCount(0);
     } else if (count < pImages.length) {
       setCount(count + 1);
+    }
+  }
+  if (type === "decrease") {
+    if (count === 0) {
+      setCount(pImages.length - 1);
+    } else if (count > 0) {
+      setCount(count - 1);
     }
   }
 };
