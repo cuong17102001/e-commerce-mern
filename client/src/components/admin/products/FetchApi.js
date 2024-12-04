@@ -102,6 +102,19 @@ export const productByCategory = async (catId) => {
   }
 };
 
+export const productByImage = async (image) => {
+  try {
+    let res = await axios.post(`${apiURL}/api/product/product-by-image`,image, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const productByPrice = async (price) => {
   try {
     let res = await axios.post(`${apiURL}/api/product/product-by-price`, {

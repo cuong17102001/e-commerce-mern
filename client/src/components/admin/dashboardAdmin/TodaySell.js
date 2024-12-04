@@ -86,6 +86,7 @@ const TodayOrderTable = ({ order }) => {
       <tr>
         <td className="w-48 hover:bg-gray-200 p-2 flex flex-col space-y-1">
           {order.allProduct.map((item, index) => {
+            debugger
             return (
               <div key={index} className="flex space-x-2">
                 <span>{item.id.pName}</span>

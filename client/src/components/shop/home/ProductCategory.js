@@ -1,9 +1,27 @@
-import React, { Fragment, useContext } from "react";
+import React, { Fragment, useContext, useState } from "react";
 import ProductCategoryDropdown from "./ProductCategoryDropdown";
 import { HomeContext } from "./index";
+import { FaCamera } from 'react-icons/fa';
+import { productByImage } from "../../admin/products/FetchApi";
+
 
 const ProductCategory = (props) => {
   const { data, dispatch } = useContext(HomeContext);
+  const [image, setImage] = useState(null);
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+      formData.append('image', file);
+    if (file) {
+      setImage(URL.createObjectURL(file));
+      let listData = await productByImage(formData);
+      console.log(listData);
+      if (listData && listData.Products) {
+        dispatch({ type: "setProducts", payload: listData.Products });
+      }
+    }
+  };
 
   return (
     <Fragment>
@@ -97,6 +115,32 @@ const ProductCategory = (props) => {
               </svg>
             </span>
           </div>
+          <span className="flex" style={{alignItems: "center", justifyContent: "center"}}>
+              {/* <svg
+                className="w-4 h-4 text-gray-700 text-yellow-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                ></path>
+              </svg> */}
+              <label htmlFor="image-upload">
+              <FaCamera className="w-4 h-4 text-gray-700 text-yellow-700" />
+              </label>
+              <input
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleImageUpload}
+              />
+            </span>
         </div>
       </div>
       <ProductCategoryDropdown />

@@ -59,7 +59,7 @@ const AllProduct = ({ products }) => {
                 <div className="relative col-span-1 m-2">
                   <div className="image-container">
                     <img
-                      style={{ margin: "auto", alignItems: "center", alignContent: "center" }}
+                      style={{height: "100%", margin: "auto", alignItems: "center", alignContent: "center" }}
                       onClick={(e) => history.push(`/products/${item._id}`)}
                       src={`${apiURL}/uploads/products/${item.pImages[0]}`}
                       alt=""

@@ -1,6 +1,8 @@
 const productModel = require("../models/products");
 const fs = require("fs");
 const path = require("path");
+const FormData = require('form-data');
+const axios = require('axios');
 
 class Product {
   // Delete Image from uploads -> products folder
@@ -230,14 +232,14 @@ class Product {
     let { price } = req.body;
     console.log(price);
 
-    if (!price) {
+    if (price == null) {
       return res.json({ error: "All fields must be required" });
     } else {
       try {
         let products = await productModel
-          .find({ pPrice: { $gt: price } })
+          .find({ pPrice: { $gte: 0, $lte: price } })
           .populate("pCategory", "cName")
-          .sort({ pPrice: -1 });
+          .sort({ pPrice: 1 });
         if (products) {
           return res.json({ Products: products });
         }
@@ -355,27 +357,51 @@ class Product {
       }
     }
   }
+
+
+
   async getProductByImage(req, res) {
     try {
-      // Lấy hình ảnh từ frontend
-      let { image } = req.body;
+      // Access the uploaded file
+      let image = req.file;
 
-      // Tạo FormData và thêm hình ảnh vào
+      if (!image) {
+        return res.status(400).send({ error: 'No image uploaded' });
+      }
+
+      // Read the image file
+      const imagePath = path.join(process.env.IMAGES_URL + "products", image.filename);
+      const imageData = fs.readFileSync(imagePath);
+
+      // Create a FormData instance and append the image file
       const formData = new FormData();
-      formData.append('image', image);
+      formData.append('image', fs.createReadStream(imagePath));
 
       // Gọi API AI search
       const response = await axios.post('http://127.0.0.1:7000/search', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+          ...formData.getHeaders()
+        }
       });
 
       // Xử lý kết quả trả về từ API
       const searchResults = response.data;
 
+      let result = [];
+      if (searchResults.result_ids.length > 0) {
+        let listIds = [...new Set(searchResults.result_ids)];
+        result = await productModel.find({ _id: { $in: listIds } });
+      }
+      
+      // Delete the uploaded image after processing
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error('Failed to delete image:', err);
+        }
+      });
+
       // Trả kết quả về cho frontend
-      res.json(searchResults);
+      return res.json({ Products : result });
     } catch (error) {
       console.error('Error calling AI search API:', error);
       res.status(500).json({ error: 'Internal Server Error' });

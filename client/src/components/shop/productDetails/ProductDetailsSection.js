@@ -203,7 +203,13 @@ const ProductDetailsSection = (props) => {
                 </span>
               </div>
             </div>
-            <div className="my-4 md:my-6 text-gray-600">
+            <div className="my-4 md:my-6 text-gray-600" style={{
+              whiteSpace : "wrap",
+              overflow : "hidden",
+              textOverflow : "ellipsis",
+              height: 150,
+              display: "block",
+            }}>
               {sProduct.pDescription}
             </div>
             <div className="my-4 md:my-6">
