@@ -1,9 +1,9 @@
 import axios from "axios";
 const apiURL = process.env.REACT_APP_API_URL;
 
-export const getAllProduct = async () => {
+export const getAllProduct = async (payload) => {
   try {
-    let res = await axios.get(`${apiURL}/api/product/all-product`);
+    let res = await axios.post(`${apiURL}/api/product/all-product`, payload);
     return res.data;
   } catch (error) {
     console.log(error);

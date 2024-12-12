@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { HomeContext } from "./index";
 import { getAllCategory } from "../../admin/categories/FetchApi";
 import { getAllProduct, productByPrice } from "../../admin/products/FetchApi";
-import { debounce } from 'lodash';
+import { debounce, filter } from 'lodash';
 import "./style.css";
 
 const apiURL = process.env.REACT_APP_API_URL;
@@ -58,36 +58,47 @@ const CategoryList = () => {
 const FilterList = () => {
   const { data, dispatch } = useContext(HomeContext);
   const [range, setRange] = useState(0);
+  const { products, queryProductPayload } = data;
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const rangeHandle = (e) => {
     setRange(e.target.value);
     fetchData(e.target.value);
   };
 
-  const fetchData = async (price) => {
-    if (price === "all") {
-      try {
-        let responseData = await getAllProduct();
-        if (responseData && responseData.Products) {
+  const fetchData = async (price, isLoadMore = false) => {
+    if (!isLoadMore) dispatch({ type: "loading", payload: true });
+
+    try {
+      let payload = {
+        ...queryProductPayload,
+        pageNumber: isLoadMore
+          ? (queryProductPayload?.pageNumber || 0) + 1
+          : 1,
+          filter: { price: price }
+      };
+
+      let responseData = await getAllProduct(payload);
+
+      if (responseData && responseData.Products) {
+        if (isLoadMore) {
+          dispatch({
+            type: "setProducts",
+            payload: [...products, ...responseData.Products],
+          });
+        } else {
           dispatch({ type: "setProducts", payload: responseData.Products });
         }
-      } catch (error) {
-        console.log(error);
+
+        dispatch({ type: "queryProductPayload", payload });
+        setHasMore(responseData.pagination.pageNumber * responseData.pagination.pageSize < responseData.pagination.totalCount); // Kiểm tra nếu còn dữ liệu để tải
       }
-    } else {
-      dispatch({ type: "loading", payload: true });
-      try {
-        setTimeout(async () => {
-          let responseData = await productByPrice(price);
-          if (responseData && responseData.Products) {
-            console.log(responseData.Products);
-            dispatch({ type: "setProducts", payload: responseData.Products });
-            dispatch({ type: "loading", payload: false });
-          }
-        }, 700);
-      } catch (error) {
-        console.log(error);
-      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      if (!isLoadMore) dispatch({ type: "loading", payload: false });
+      setLoadingMore(false);
     }
   };
 

@@ -5,6 +5,12 @@ export const homeState = {
   products: null,
   loading: false,
   sliderImages: [],
+  queryProductPayload: {
+    pageSize : 20,
+    pageNumber : 1,
+    search : "",
+    filter: null,
+  },
 };
 
 export const homeReducer = (state, action) => {
@@ -35,6 +41,11 @@ export const homeReducer = (state, action) => {
         ...state,
         products: action.payload,
       };
+    case "queryProductPayload":
+        return {
+          ...state,
+          queryProductPayload: action.payload,
+        };
     case "searchHandleInReducer":
       return {
         ...state,
