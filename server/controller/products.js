@@ -30,21 +30,51 @@ class Product {
 
   async getAllProduct(req, res) {
     try {
-      let Products = await productModel
-        // .find({pName: {$regex: "áo", $options: 'i'}})
-        .find({})
-        .populate("pCategory", "_id cName")
-        .sort({ _id: -1 })
-        .limit(10);
-      console.log(Products);
-
-      if (Products) {
-        return res.json({ Products });
+      const { pageSize = 10, pageNumber = 1, search = "", filter = {} } = req.body;
+  
+      // Tạo điều kiện tìm kiếm dựa trên `search` và `filter`
+      const query = {
+        pName: { $regex: search, $options: "i" }, // Tìm kiếm không phân biệt chữ hoa, chữ thường
+      };
+      if (filter?.price) {
+        query.pPrice = { $gte: 0, $lte: filter.price };
       }
+
+      if (filter?.category) {
+        query.pCategory = { $in: filter.category };
+      }
+  
+      // Tính toán số lượng bản ghi cần bỏ qua (skip)
+      const skip = (pageNumber - 1) * pageSize;
+  
+      // Truy vấn cơ sở dữ liệu với phân trang, tìm kiếm, và lọc
+      const Products = await productModel
+        .find(query)
+        .populate("pCategory", "_id cName") // Lấy thông tin từ `pCategory`
+        .sort({ _id: -1 }) // Sắp xếp theo thứ tự giảm dần của `_id`
+        .skip(skip) // Bỏ qua các bản ghi đã xem
+        .limit(pageSize); // Giới hạn số bản ghi trả về
+  
+      // Lấy tổng số bản ghi để hỗ trợ hiển thị tổng số trang
+      const totalCount = await productModel.countDocuments(query);
+  
+      return res.json({
+        Products,
+        pagination: {
+          pageSize,
+          pageNumber,
+          totalCount,
+          filter,
+          search,
+          totalPages: Math.ceil(totalCount / pageSize),
+        },
+      });
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
+  
 
   async postAddProduct(req, res) {
     let { pName, pDescription, pPrice, pQuantity, pCategory, pOffer, pStatus } =
@@ -378,7 +408,7 @@ class Product {
       formData.append('image', fs.createReadStream(imagePath));
 
       // Gọi API AI search
-      const response = await axios.post('http://127.0.0.1:7000/search', formData, {
+      const response = await axios.post('http://127.0.0.1:7000/find-similar-products', formData, {
         headers: {
           ...formData.getHeaders()
         }
@@ -388,9 +418,9 @@ class Product {
       const searchResults = response.data;
 
       let result = [];
-      if (searchResults.result_ids.length > 0) {
-        let listIds = [...new Set(searchResults.result_ids)];
-        result = await productModel.find({ _id: { $in: listIds } });
+      if (searchResults.similar_images.length > 0) {
+        let listImages = [...new Set(searchResults.similar_images)];
+        result = await productModel.find({ pImages: { $in: listImages } });
       }
       
       // Delete the uploaded image after processing

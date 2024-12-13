@@ -3,14 +3,15 @@ import { useHistory } from "react-router-dom";
 import { HomeContext } from "./index";
 import { getAllCategory } from "../../admin/categories/FetchApi";
 import { getAllProduct, productByPrice } from "../../admin/products/FetchApi";
-import { debounce, filter } from 'lodash';
+import { debounce, filter, wrap } from 'lodash';
 import "./style.css";
 
 const apiURL = process.env.REACT_APP_API_URL;
 
 const CategoryList = () => {
   const history = useHistory();
-  const { data } = useContext(HomeContext);
+  const { data, dispatch } = useContext(HomeContext);
+  const { products, queryProductPayload } = data;
   const [categories, setCategories] = useState(null);
 
   useEffect(() => {
@@ -28,23 +29,48 @@ const CategoryList = () => {
     }
   };
 
+  const fetchDataProductByCategory = async (cId) => {
+    try {
+      dispatch({ type: "loading", payload: true });      
+      let payload = {
+        ...queryProductPayload,
+        pageNumber: 1,
+      };
+
+      if (cId !== "") {
+        payload.filter = { ...payload.filter, category: cId };
+      }
+      let responseData = await getAllProduct(payload);
+      if (responseData && responseData.Products) {
+        dispatch({ type: "setProducts", payload: responseData.Products });
+        dispatch({ type: "queryProductPayload", payload });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    finally {
+      dispatch({ type: "loading", payload: false });
+    }
+  };
+
   return (
     <div className={`${data.categoryListDropdown ? "" : "hidden"} my-4`}>
       <hr />
-      <div className="flex">
+      {/* wrap content */}
+      <div className="flex" style={{ flexWrap: "wrap"}}>
         {categories && categories.length > 0 ? (
           categories.map((item, index) => {
             return (
-              <Fragment key={index}>
+              <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} key={index}>
                 <div
                   onClick={(e) =>
-                    history.push(`/products/category/${item._id}`)
+                    fetchDataProductByCategory(item._id)
                   }
                   className="flex flex-col items-center justify-center space-y-2 cursor-pointer"
                 >
-                  <div style={{padding: 15}} className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{item.cName}</div>
+                  <div style={{ padding: 15 }} className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{item.cName}</div>
                 </div>
-              </Fragment>
+              </div>
             );
           })
         ) : (
@@ -76,7 +102,7 @@ const FilterList = () => {
         pageNumber: isLoadMore
           ? (queryProductPayload?.pageNumber || 0) + 1
           : 1,
-          filter: { price: price }
+        filter: { ...filter, price: price }
       };
 
       let responseData = await getAllProduct(payload);
@@ -155,7 +181,10 @@ const FilterList = () => {
 const Search = () => {
   const { data, dispatch } = useContext(HomeContext);
   const [search, setSearch] = useState("");
+  const { products, queryProductPayload } = data;
   const [productArray, setPa] = useState(null);
+  const [inputValue, setInputValue] = useState('');
+  const [debouncedValue, setDebouncedValue] = useState('');
 
   // const searchHandle = async (e) => {
   //   setSearch(e.target.value);
@@ -167,26 +196,54 @@ const Search = () => {
   //   // });
   // };
 
-  const searchHandle = (e) => {
-    setSearch(e.target.value);
-    debouncedSearch(e.target.value);
+  useEffect(() => {
+    // Set up a timeout to update the debounced value
+    const handler = setTimeout(() => {
+      setDebouncedValue(inputValue);
+    }, 1000); // 1 second debounce
+
+    // Cleanup the timeout if inputValue changes before the timeout is executed
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [inputValue]);
+
+  const handleChange = (event) => {
+    setInputValue(event.target.value);
   };
 
-  const debouncedSearch = useCallback(
-    debounce((value) => {
-      fetchData();
-    }, 300), // Thời gian delay 300ms
-    []
-  );
+  useEffect(() => {
+    if (debouncedValue) {
+      fetchData(debouncedValue);
+    }
+  }, [debouncedValue]);
 
-  const fetchData = async () => {
+  const searchHandle = (e) => {
+    // stop 1s before search
+    // setSearch(e.target.value);
+    debounce(fetchData(e.target.value), 1000);
+  };
+
+  const fetchData = async (value) => {
     dispatch({ type: "loading", payload: true });
     try {
-      let responseData = await getAllProduct();
-        if (responseData && responseData.Products) {
-          setPa(responseData.Products);
-          dispatch({ type: "loading", payload: false });
-        }
+      let payload = {
+        ...queryProductPayload,
+        pageNumber: 1,
+      };
+      if (value !== "") {
+        payload.search = value;
+      }
+
+      let responseData = await getAllProduct(payload);
+      if (responseData && responseData.Products) {
+        dispatch({
+          type: "setProducts",
+          payload: [...data.products ?? [], ...responseData.Products],
+        });
+        dispatch({ type: "queryProductPayload", payload });
+        dispatch({ type: "loading", payload: false });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -201,13 +258,12 @@ const Search = () => {
 
   return (
     <div
-      className={`${
-        data.searchDropdown ? "" : "hidden"
-      } my-4 flex items-center justify-between`}
+      className={`${data.searchDropdown ? "" : "hidden"
+        } my-4 flex items-center justify-between`}
     >
       <input
-        value={search}
-        onChange={(e) => searchHandle(e)}
+        value={inputValue}
+        onChange={handleChange}
         className="px-4 text-xl py-4 focus:outline-none"
         type="text"
         placeholder="Search products..."
