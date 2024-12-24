@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const productController = require("../controller/products");
 const multer = require("multer");
+const { loginCheck } = require("../middleware/auth");
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -22,10 +23,12 @@ router.post("/product-by-search", productController.getProductBySearch);
 router.post("/wish-product", productController.getWishProduct);
 router.post("/cart-product", productController.getCartProduct);
 
-router.post("/add-product", upload.any(), productController.postAddProduct);
-router.post("/edit-product", upload.any(), productController.postEditProduct);
-router.post("/delete-product", productController.getDeleteProduct);
-router.post("/single-product", productController.getSingleProduct);
+router.post("/add-product", loginCheck, upload.any(), productController.postAddProduct);
+router.post("/edit-product", loginCheck, upload.any(), productController.postEditProduct);
+router.post("/delete-product",loginCheck, productController.getDeleteProduct);
+router.post("/single-product", loginCheck, productController.getSingleProduct);
+
+router.post("/get-revenue", productController.getRevenue);
 
 router.post("/add-review", productController.postAddReview);
 router.post("/delete-review", productController.deleteReview);

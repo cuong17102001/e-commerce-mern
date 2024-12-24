@@ -315,6 +315,76 @@ class Product {
     }
   }
 
+  async getRevenue(req, res) {
+    const { statisticBy } = req.body;
+
+    if (!statisticBy) {
+      return res.json({ error: "All fields must be required" });
+    }
+
+    try {
+      let revenue;
+
+      switch (statisticBy) {
+        case "daily":
+          revenue =  await orderModel.aggregate([
+            {
+              $group: {
+                _id: {
+                  year: { $year: "$createdAt" },
+                  month: { $month: "$createdAt" },
+                  day: { $dayOfMonth: "$createdAt" },
+                },
+                totalRevenue: { $sum: "$amount" },
+              },
+            },
+            {
+              $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 },
+            },
+          ]);
+          break;
+        case "monthly":
+          revenue = await orderModel.aggregate([
+            {
+              $group: {
+                _id: {
+                  year: { $year: "$createdAt" },
+                  month: { $month: "$createdAt" },
+                },
+                totalRevenue: { $sum: "$amount" },
+              },
+            },
+            {
+              $sort: { "_id.year": 1, "_id.month": 1 },
+            },
+          ]);
+          break;
+        case "yearly":
+          revenue = await orderModel.aggregate([
+            {
+              $group: {
+                _id: {
+                  year: { $year: "$createdAt" },
+                },
+                totalRevenue: { $sum: "$amount" },
+              },
+            },
+            {
+              $sort: { "_id.year": 1 },
+            },
+          ]);
+          break;
+        default:
+          return res.status(400).json({ error: "Invalid statisticBy value" });
+      }
+
+      return res.json({ revenue });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "An error occurred" });
+    }
+  }
+
   async postAddReview(req, res) {
     let { pId, uId, rating, review } = req.body;
     if (!pId || !rating || !review || !uId) {
