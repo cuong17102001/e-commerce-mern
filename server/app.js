@@ -1,22 +1,6 @@
-/* 
-
-================== Most Important ==================
-* Issue 1 :
-In uploads folder you need create 3 folder like bellow.
-Folder structure will be like: 
-public -> uploads -> 1. products 2. customize 3. categories
-*** Now This folder will automatically create when we run the server file
-
-* Issue 2:
-For admin signup just go to the auth 
-controller then newUser obj, you will 
-find a role field. role:1 for admin signup & 
-role: 0 or by default it for customer signup.
-go user model and see the role field.
-
-*/
-
 const express = require("express");
+const http = require("http"); // Required for setting up Socket.IO
+const { Server } = require("socket.io");
 const app = express();
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -36,6 +20,7 @@ const paymentRouter = require("./routes/payment");
 // Import Auth middleware for check user login or not~
 const { loginCheck } = require("./middleware/auth");
 const CreateAllFolder = require("./config/uploadFolderCreateScript");
+const Message = require("./models/message");
 
 /* Create All Uploads Folder if not exists | For Uploading Images */
 CreateAllFolder();
@@ -72,8 +57,59 @@ app.use("/api/order", orderRouter);
 app.use("/api/customize", customizeRouter);
 app.use("/api/payment", paymentRouter);
 
+// Set up HTTP server and Socket.IO
+const server = http.createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*", // Điều chỉnh origin phù hợp với ứng dụng của bạn
+    methods: ["GET", "POST"],
+  },
+});
+// Lưu trữ danh sách người dùng đang online
+const users = {};
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  // Lưu thông tin người dùng khi họ đăng nhập
+  socket.on("register", ({ userId }) => {
+    users[userId] = socket.id;
+    console.log("Registered user:", userId, "with socket ID:", socket.id);
+  });
+
+  // Admin hoặc user tham gia phòng
+  socket.on("joinRoom", ({ roomId }) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room ${roomId}`);
+  });
+
+  // Xử lý gửi tin nhắn
+  socket.on("sendMessage", async ({ roomId, sender, message }) => {
+    io.to(roomId).emit("receiveMessage", { sender, message });
+    console.log(`Message from ${sender} to room ${roomId}: ${message}`);
+
+    const newMessage = new Message({
+      roomId,
+      sender,
+      message
+    });
+
+    await newMessage.save();
+  });
+
+  // Khi user ngắt kết nối
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+    for (const [key, value] of Object.entries(users)) {
+      if (value === socket.id) {
+        delete users[key];
+        break;
+      }
+    }
+  });
+});
+
 // Run Server
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log("Server is running on ", PORT);
 });

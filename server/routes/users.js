@@ -11,4 +11,6 @@ router.post("/delete-user", usersController.getDeleteUser);
 
 router.post("/change-password", usersController.changePassword);
 
+router.post("/get-message-by-room", usersController.getMessageByRoom);
+
 module.exports = router;

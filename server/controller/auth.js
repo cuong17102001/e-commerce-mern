@@ -110,6 +110,7 @@ class Auth {
     }
     try {
       const data = await userModel.findOne({ email: email });
+      const admin = await userModel.findOne({ userRole: 1 });
       if (!data) {
         return res.json({
           error: "Invalid email or password",
@@ -125,6 +126,7 @@ class Auth {
           return res.json({
             token: token,
             user: encode,
+            admin: admin._id,
           });
         } else {
           return res.json({

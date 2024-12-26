@@ -1,3 +1,4 @@
+const Message = require("../models/message");
 const userModel = require("../models/users");
 const bcrypt = require("bcryptjs");
 
@@ -5,7 +6,7 @@ class User {
   async getAllUser(req, res) {
     try {
       let Users = await userModel
-        .find({})
+        .find({ userRole: 0 })
         .populate("allProduct.id", "pName pImages pPrice")
         .populate("user", "name email")
         .sort({ _id: -1 });
@@ -96,6 +97,22 @@ class User {
         if (err) console.log(err);
         return res.json({ success: "User updated successfully" });
       });
+    }
+  }
+
+  async getMessageByRoom(req, res) {
+    let { roomId } = req.body;
+    if (!roomId) {
+      return res.json({ message: "All filled must be required" });
+    } else {
+      try {
+        let message = await Message.find({ roomId: roomId });
+        if (message) {
+          return res.json({ message });
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 

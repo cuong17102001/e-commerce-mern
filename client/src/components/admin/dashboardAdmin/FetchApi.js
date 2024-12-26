@@ -19,6 +19,29 @@ export const getSliderImages = async () => {
   }
 };
 
+export const getAllUsers = async () => {
+  try {
+    let res = await axios.get(
+      `${apiURL}/api/user/all-user`
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const getMessageByRoom = async (roomId) => {
+  try {
+    let res = await axios.post(
+      `${apiURL}/api/user/get-message-by-room`,
+      { roomId }
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const postUploadImage = async (formData) => {
   try {
     let res = await axios.post(

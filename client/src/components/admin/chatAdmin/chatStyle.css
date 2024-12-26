@@ -1,0 +1,100 @@
+/* styles.css */
+  .container {
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+        background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .user-list button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background: #303031;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .user-list button:hover {
+    background: #222224;
+  }
+  
+  .chat-box {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+  
+  .message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .message.self {
+    background: #303031;
+    color: white;
+    align-self: flex-end;
+  }
+  
+  .message.other {
+    background: #f1f1f1;
+    align-self: flex-start;
+  }
+  
+  .input-container {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .input-container input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .input-container button {
+    padding: 10px 20px;
+    background: #1a1b1a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .input-container button:hover {
+    background: #218838;
+  }
+  
+  .back-button {
+    background: #221333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    background: #726466;
+  }
+  
