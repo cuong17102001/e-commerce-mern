@@ -19,6 +19,17 @@ export const getSliderImages = async () => {
   }
 };
 
+export const getRevenue = async (option) => {
+  try {
+    let res = await axios.post(`${apiURL}/api/product/get-revenue`,
+      { statisticBy : option }
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const getAllUsers = async () => {
   try {
     let res = await axios.get(

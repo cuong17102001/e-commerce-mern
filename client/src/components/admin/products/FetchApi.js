@@ -60,7 +60,6 @@ export const editProduct = async (product) => {
       formData.append("pEditImages", file);
     }
   }
-  debugger
   console.log(product, "data product");
   
   /* Most important part for updating multiple image  */

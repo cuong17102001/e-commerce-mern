@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const FormData = require('form-data');
 const axios = require('axios');
+const { log } = require("console");
+const orderModel = require("../models/orders");
 
 class Product {
   // Delete Image from uploads -> products folder
@@ -316,8 +318,11 @@ class Product {
   }
 
   async getRevenue(req, res) {
+
     const { statisticBy } = req.body;
 
+    console.log(statisticBy);
+    
     if (!statisticBy) {
       return res.json({ error: "All fields must be required" });
     }
